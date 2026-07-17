@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -21,6 +22,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.vidal.cinevault.R
 import com.vidal.cinevault.core.AppConfig
 import com.vidal.cinevault.core.ScreenshotManager
+import com.vidal.cinevault.core.ScreenshotAutoImporter
+import com.vidal.cinevault.core.SourceUriStore
 import com.vidal.cinevault.core.SyncFolderManager
 import com.vidal.cinevault.core.UriImporter
 import com.vidal.cinevault.databinding.ActivityMainBinding
@@ -48,8 +51,21 @@ class MainActivity : AppCompatActivity() {
     private var inTrash = false
     private var filterState = FilterState()
     private var pendingMetadata = ImageMetadata()
+    private var pendingOriginalDeletionIds: List<String> = emptyList()
 
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+
+    private val photoLibraryPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) scanAutomaticScreenshots()
+        else Toast.makeText(this, "Sin acceso completo a fotos no se pueden detectar capturas automáticamente", Toast.LENGTH_LONG).show()
+    }
+
+    private val originalDeletionRequest = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) finishManagedDeletion(pendingOriginalDeletionIds)
+        pendingOriginalDeletionIds = emptyList()
+    }
 
     private val syncFolderPicker = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         if (uri != null) {
@@ -89,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         binding.imageGrid.adapter = adapter
         bindActions()
         requestNotificationPermissionIfNeeded()
+        requestPhotoLibraryPermissionIfNeeded()
         if (intent.getBooleanExtra(EXTRA_SHOW_EXPIRING, false)) {
             filterState = filterState.copy(expiringOnly = true)
         }
@@ -99,7 +116,10 @@ class MainActivity : AppCompatActivity() {
     /** Refreshes after returning from detail or Android settings. */
     override fun onResume() {
         super.onResume()
-        if (::manager.isInitialized) refresh()
+        if (::manager.isInitialized) {
+            scanAutomaticScreenshots()
+            refresh()
+        }
     }
 
     /** Routes notification taps to expiring images or the trash view. */
@@ -376,13 +396,56 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("Cancelar", null)
             .setPositiveButton("Borrar") { _, _ ->
                 val ids = selectedIds.toList()
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) { ids.forEach { runCatching { manager.deleteNow(it) } } }
-                    clearSelection()
-                    refresh()
-                }
+                requestOriginalDeletionThenFinish(ids)
             }
             .show()
+    }
+
+    /** Requests Android's mandatory confirmation before deleting original Samsung Gallery items. */
+    private fun requestOriginalDeletionThenFinish(ids: List<String>) {
+        val originalUris = SourceUriStore(this).get(ids)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && originalUris.isNotEmpty()) {
+            pendingOriginalDeletionIds = ids
+            val pendingIntent = android.provider.MediaStore.createDeleteRequest(contentResolver, originalUris)
+            originalDeletionRequest.launch(IntentSenderRequest.Builder(pendingIntent.intentSender).build())
+        } else {
+            finishManagedDeletion(ids)
+        }
+    }
+
+    /** Deletes managed copies after originals are confirmed, or directly for manual imports. */
+    private fun finishManagedDeletion(ids: List<String>) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) { ids.forEach { runCatching { manager.deleteNow(it) } } }
+            SourceUriStore(this@MainActivity).remove(ids)
+            clearSelection()
+            refresh()
+        }
+    }
+
+    /** Requests full photo access required for automatic screenshot discovery. */
+    private fun requestPhotoLibraryPermissionIfNeeded() {
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            photoLibraryPermission.launch(permission)
+        }
+    }
+
+    /** Imports newly created Screenshots on an IO dispatcher and refreshes the dashboard. */
+    private fun scanAutomaticScreenshots() {
+        lifecycleScope.launch {
+            val imported = withContext(Dispatchers.IO) {
+                runCatching { ScreenshotAutoImporter(this@MainActivity).importNewScreenshots() }.getOrDefault(0)
+            }
+            if (imported > 0) {
+                Toast.makeText(this@MainActivity, "$imported capturas detectadas automáticamente", Toast.LENGTH_LONG).show()
+                refresh()
+            }
+        }
     }
 
     /** Opens a full-screen record using its stable UUID. */

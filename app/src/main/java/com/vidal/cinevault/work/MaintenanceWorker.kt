@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.vidal.cinevault.core.AppConfig
 import com.vidal.cinevault.core.ScreenshotManager
+import com.vidal.cinevault.core.ScreenshotAutoImporter
 import com.vidal.cinevault.notifications.ExpiryNotifier
 
 /** Android-managed hourly task for warnings, trash moves and final deletion. */
@@ -15,6 +16,7 @@ class MaintenanceWorker(
 
     /** Executes one idempotent maintenance pass. */
     override suspend fun doWork(): Result = try {
+        ScreenshotAutoImporter(applicationContext).importNewScreenshots()
         val config = AppConfig.load(applicationContext)
         val manager = ScreenshotManager(applicationContext, config)
         if (config.notificationsEnabled) {
