@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="cinevault.db" />
+        <exclude domain="file" path="CineVault48/" />
+        <exclude domain="external" path="Pictures/CineVault48/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="cinevault.db" />
+        <exclude domain="file" path="CineVault48/" />
+        <exclude domain="external" path="Pictures/CineVault48/" />
+    </device-transfer>
+</data-extraction-rules>

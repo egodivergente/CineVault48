@@ -1,0 +1,11 @@
+{
+  "root_folder": "CineVault48",
+  "retention_hours": 48,
+  "warning_hours_before_expiry": 24,
+  "trash_grace_hours": 24,
+  "check_interval_hours": 1,
+  "thumbnail_size_px": 720,
+  "max_import_batch": 30,
+  "notifications_enabled": true,
+  "dry_run": false
+}
