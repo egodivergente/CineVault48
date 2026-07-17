@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">CineVault 48</string>
+    <string name="gallery">Galería</string>
+    <string name="trash">Papelera</string>
+    <string name="add_images">Añadir imágenes</string>
+    <string name="filters">Filtros</string>
+    <string name="settings">Ajustes</string>
+    <string name="mark_permanent">Hacer permanentes</string>
+    <string name="restore">Restaurar</string>
+    <string name="delete_now">Borrar ahora</string>
+    <string name="empty_gallery">Aún no hay pantallazos. Añade frames, prompts o referencias.</string>
+    <string name="empty_trash">La papelera está vacía.</string>
+    <string name="notification_channel_name">Avisos de caducidad</string>
+    <string name="notification_channel_description">Avisa 24 horas antes de que una imagen pase a la papelera.</string>
+    <string name="notification_title">Imágenes próximas a caducar</string>
+</resources>

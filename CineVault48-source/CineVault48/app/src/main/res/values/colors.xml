@@ -1,0 +1,15 @@
+<resources>
+    <color name="ink">#0A0B10</color>
+    <color name="surface">#151721</color>
+    <color name="surface_high">#202331</color>
+    <color name="violet">#9B87F5</color>
+    <color name="violet_dark">#5E48C8</color>
+    <color name="cyan">#70D6E4</color>
+    <color name="text_primary">#F7F4FF</color>
+    <color name="text_secondary">#B8B5C6</color>
+    <color name="warning">#F5B942</color>
+    <color name="success">#56D68B</color>
+    <color name="danger">#F07178</color>
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+</resources>

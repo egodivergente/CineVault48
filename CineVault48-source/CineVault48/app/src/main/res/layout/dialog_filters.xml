@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Proyecto (vacío = todos)">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/projectFilterInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="14dp"
+        android:paddingBottom="4dp"
+        android:text="Tipo"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/typeFilterSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="48dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="14dp"
+        android:paddingBottom="4dp"
+        android:text="Fecha de incorporación"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/dateFilterSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="48dp" />
+
+</LinearLayout>
