@@ -1,38 +1,23 @@
 # CineVault 48
 
-Galería Android nativa para pantallazos cinematográficos generados con IA, diseñada para Samsung Galaxy S25 Ultra.
+Galería Android temporal por proyectos, con Photo Picker, retención y modo de simulación. Prototipo con código público.
 
-## Resultado
+Prototipo de galería temporal para material creativo, con importación mediante Photo Picker, proyectos, papelera y simulación de las operaciones de retención.
 
-- Importación privada mediante Photo Picker, sin permiso para leer toda la galería.
-- Retención temporal de 48 horas.
-- Aviso preventivo antes de papelera y aviso final 24 h antes del borrado físico.
-- Papelera con 24 horas adicionales de gracia.
-- Modo simulación que registra sin mover ni borrar.
-- Grid móvil de dos columnas con badges de tiempo restante.
-- Pulsación larga o checkbox para selección múltiple.
-- Filtros por proyecto, fecha y tipo (`prompt`, `frame`, `reference`).
-- SQLite con tablas `imagenes`, `proyectos` y `logs`.
-- Copia opcional de permanentes a una carpeta local, Google Drive o Dropbox.
-- Trabajo periódico persistente con WorkManager.
-- Pruebas unitarias e instrumentadas, incluida una fixture de 10 imágenes.
-- Workflow de GitHub Actions que genera un APK instalable.
+**Estado:** código público con documentación y pruebas incluidas. Esta auditoría no ha compilado el proyecto ni probado una instalación actual. No hay una Release publicada en la revisión del 6 de octubre de 2026.
 
-## Orden de lectura
+| Lectura | Documento |
+| --- | --- |
+| Diseño y módulos | [Arquitectura](docs/ARCHITECTURE.md) |
+| Modelo de datos | [Esquema SQLite](docs/DATABASE.sql) |
+| Procedimiento histórico | [Instalación](docs/DEPLOYMENT.md) |
 
-1. [Arquitectura completa](docs/ARCHITECTURE.md)
-2. [Código por módulos](docs/ARCHITECTURE.md#módulos-y-responsabilidades)
-3. [Esquema SQLite](docs/DATABASE.sql)
-4. [Instalación paso a paso](docs/DEPLOYMENT.md)
+La raíz conserva el proyecto Android y una copia `CineVault48-source/`. No se ha demostrado que esas dos carpetas sean equivalentes. El workflow de compilación existe; su presencia no acredita una ejecución exitosa o un APK actual.
 
-## Inicio rápido
+El diseño contempla retención y borrado de copias temporales. Revisar la configuración y el modo de simulación antes de usar material real. Las copias a proveedores externos se realizan mediante carpetas elegidas por el usuario; no se presenta una API de Drive o Dropbox verificada.
 
-Abre este directorio con Android Studio, conecta el S25 Ultra y pulsa **Run**. Para una compilación remota, sube el proyecto a GitHub y ejecuta el workflow **Build Android APK**.
+[Otros productos de Egodivergente](https://github.com/vidaltb94-collab/vidaltb94-collab/blob/main/PROJECTS.md).
 
-## Configuración predeterminada
+## Estado y continuidad
 
-Los valores viven en `app/src/main/assets/config.json`. Para probar con seguridad, abre la app y activa **Ajustes → Modo simulación** antes de importar material real.
-
-## Privacidad
-
-La v1 funciona sin cuenta y sin servidor. Las temporales se guardan en el espacio específico de la app; solo las imágenes elegidas explícitamente como permanentes pueden copiarse al proveedor externo que el usuario vincule.
+Los archivos de código y las pruebas existentes se conservan. Se ha revisado la descripción documental; no se presenta este prototipo como la mejor aplicación del ecosistema.
