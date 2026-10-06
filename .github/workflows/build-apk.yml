@@ -2,6 +2,11 @@ name: Build Android APK
 
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Etiqueta de la Release a publicar con el APK (por ejemplo v1.0.0). Vacío: solo compilar."
+        required: false
+        default: ""
   push:
     branches: [main]
     tags: ["v*"]
@@ -60,12 +65,13 @@ jobs:
           echo "::error title=Gradle::$msg"
 
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
-          APK="CineVault48-${GITHUB_REF_NAME}.apk"
+          APK="CineVault48-${TAG}.apk"
           cp app/build/outputs/apk/debug/app-debug.apk "$APK"
-          gh release create "$GITHUB_REF_NAME" "$APK" \
-            --title "CineVault 48 ${GITHUB_REF_NAME}" \
+          gh release create "$TAG" "$APK" --target "$GITHUB_SHA" \
+            --title "CineVault 48 ${TAG}" \
             --notes "APK de depuración compilado por GitHub Actions desde el commit ${GITHUB_SHA::7}. Requiere Android 9 o superior. Para instalarlo, permite la instalación de apps de origen desconocido. Está firmado con la clave de depuración de CI, así que no actualiza una instalación hecha con otra firma: desinstala antes la versión anterior."
