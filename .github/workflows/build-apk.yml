@@ -4,10 +4,13 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    tags: ["v*"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 30
 
     steps:
@@ -33,10 +36,14 @@ jobs:
           gradle-version: "8.13"
 
       - name: Run unit tests
-        run: gradle :app:testDebugUnitTest
+        run: |
+          set -o pipefail
+          gradle :app:testDebugUnitTest 2>&1 | tee -a gradle.log
 
       - name: Build debug APK
-        run: gradle :app:assembleDebug
+        run: |
+          set -o pipefail
+          gradle :app:assembleDebug 2>&1 | tee -a gradle.log
 
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
@@ -44,3 +51,21 @@ jobs:
           name: CineVault48-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Show Gradle errors
+        if: failure()
+        run: |
+          test -f gradle.log || exit 0
+          msg=$(grep -E "^e: |error:|What went wrong|Could not|FAILED|^> |Exception" gradle.log | head -40 | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+          echo "::error title=Gradle::$msg"
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK="CineVault48-${GITHUB_REF_NAME}.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "$APK"
+          gh release create "$GITHUB_REF_NAME" "$APK" \
+            --title "CineVault 48 ${GITHUB_REF_NAME}" \
+            --notes "APK de depuración compilado por GitHub Actions desde el commit ${GITHUB_SHA::7}. Requiere Android 9 o superior. Para instalarlo, permite la instalación de apps de origen desconocido. Está firmado con la clave de depuración de CI, así que no actualiza una instalación hecha con otra firma: desinstala antes la versión anterior."
