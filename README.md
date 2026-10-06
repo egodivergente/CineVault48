@@ -1,23 +1,11 @@
 # CineVault 48
 
-Galería Android temporal por proyectos, con Photo Picker, retención y modo de simulación. Prototipo con código público.
+Una galería para material creativo que solo hace falta durante unos días. Importa imágenes mediante Photo Picker, las agrupa por proyectos y aplica un ciclo de retención con papelera.
 
-Prototipo de galería temporal para material creativo, con importación mediante Photo Picker, proyectos, papelera y simulación de las operaciones de retención.
+La retención prevista es de 48 horas, con 24 horas adicionales en papelera. El modo de simulación permite revisar las operaciones antes de mover o borrar archivos.
 
-**Estado:** código público con documentación y pruebas incluidas. Esta auditoría no ha compilado el proyecto ni probado una instalación actual. No hay una Release publicada en la revisión del 6 de octubre de 2026.
+Este repositorio es un prototipo con código público. Incluye pruebas y un workflow de compilación; las pruebas de la instalación actual siguen pendientes.
 
-| Lectura | Documento |
-| --- | --- |
-| Diseño y módulos | [Arquitectura](docs/ARCHITECTURE.md) |
-| Modelo de datos | [Esquema SQLite](docs/DATABASE.sql) |
-| Procedimiento histórico | [Instalación](docs/DEPLOYMENT.md) |
+[Arquitectura](docs/ARCHITECTURE.md) · [Esquema de datos](docs/DATABASE.sql) · [Instalación](docs/DEPLOYMENT.md).
 
-La raíz conserva el proyecto Android y una copia `CineVault48-source/`. No se ha demostrado que esas dos carpetas sean equivalentes. El workflow de compilación existe; su presencia no acredita una ejecución exitosa o un APK actual.
-
-El diseño contempla retención y borrado de copias temporales. Revisar la configuración y el modo de simulación antes de usar material real. Las copias a proveedores externos se realizan mediante carpetas elegidas por el usuario; no se presenta una API de Drive o Dropbox verificada.
-
-[Otros productos de Egodivergente](https://github.com/vidaltb94-collab/vidaltb94-collab/blob/main/PROJECTS.md).
-
-## Estado y continuidad
-
-Los archivos de código y las pruebas existentes se conservan. Se ha revisado la descripción documental; no se presenta este prototipo como la mejor aplicación del ecosistema.
+Hay un proyecto en la raíz y una copia en `CineVault48-source/`. Su correspondencia está pendiente de comparar antes de consolidarlos.
